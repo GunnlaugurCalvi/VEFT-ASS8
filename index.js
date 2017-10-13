@@ -1,2 +1,2 @@
-#starts the web server, connects to the database, but does very little work
-otherwise
+const express = require('express');
+const mongoose = require('mongoose'); 
