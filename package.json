@@ -2,11 +2,11 @@
   "name": "Punchcard",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "babel": "babel --presets es2015 server.js -o build/server.bundle.js",
-    "start": "node /build/server.bundle.js",
+    "babel": "babel --presets es2015 index.js -o build/index.bundle.js",
+    "start": "node /build/index.bundle.js",
     "execute": "npm run babel && npm start"
   },
   "author": "AL",
@@ -15,7 +15,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "mongoose": "^4.12.2",
-    "node-uuid": "^1.4.8"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel": "^6.5.2",
