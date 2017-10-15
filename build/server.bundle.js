@@ -10,6 +10,9 @@ var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//const express = require("express");
+//const bodyParser = require('body-parser');
+
 /*
     In order for this to successfully run, there are 3 steps that need to be taken
       1. npm install
