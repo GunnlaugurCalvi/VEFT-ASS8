@@ -14,6 +14,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
+//const express = require("express");
+//const bodyParser = require('body-parser');
+
 var app = express();
 app.use(bodyParser.json());
 
@@ -22,8 +25,7 @@ var companies = [];
 var users = [];
 var punches = new Map();
 
-// Initialize listen for app to listen on a specific port, either provided or hardcoded
-app.listen(process.env.PORT || 5001);
+
 
 // Returns all companies, registered in the punchcard.com service
 app.get('/api/companies', function (req, res) {
@@ -165,3 +167,6 @@ function getCompanyNameById(companyId) {
     }
     return "";
 }
+
+// Initialize listen for app to listen on a specific port, either provided or hardcoded
+app.listen(5001, () => console.log('Server is running'));
