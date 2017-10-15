@@ -19,3 +19,10 @@ var punches = new Schema({
     created: { type: Date, default: Date.now },     // Time stand when punch is created
     used: { type: Boolean, required: false }        // Indicated if the user has used his discound, true or false
 });
+
+
+module.exports = {
+    Users: mongoose.model('Users', users),
+    Companies: mongoose.model('Companies', companies),
+    Punches: mongoose.model('Punches', punches)
+  };

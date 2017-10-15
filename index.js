@@ -23,7 +23,7 @@ const express = require("express");
 const bodyParser = require('body-parser');
 
 var app = express();
-app.use('./api', api);
+app.use('/api', api);
 
 var url = 'mongodb://localhost:5001/app'
 mongoose.connect(url, {useMongoClient: true});
@@ -31,4 +31,4 @@ mongoose.Promise = global.Promise;
 
 console.log('Connected -->', url);
 // Initialize listen for app to listen on a specific port, either provided or hardcoded
-app.listen(5001, () => console.log('Server is running'));
+app.listen(5001, () => console.log('Server is running on port 5001'));
