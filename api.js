@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const entities = require('./entities');
+// const Companies = require('./entities');
+// const Punches = require('./entities');
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 
@@ -9,40 +11,46 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const adminToken = 'admin';
-router.use(bodyParser.urlencoded({ extended: false }));
-
 // Defining data structures for companies and users in punchcard.com
-var companies = [];
-// var users = [];
-// var punches = new Map();
 
 router.get('/companies', function (req, res) {
-    console.log('api/companies');
-    
-    var companies = getCompanies();    
-    if (companies) {
-        return res.status(500).json({'error': 'Unable to get companies due to an unknown error!'});
-    }
-
-    return res.json(companies);
+    console.log("asdf");
+    entities.Companies.find({}).exec((err, data) =>{
+        const filteredData = data.map(comps => ({
+            name: comps.name,
+            punchCount: comps.punchCount,
+            id: comps._id
+        }));
+        res.json({comps: filteredData});
+    });
 });
 
-// // Registers a new company to the punchcard.com service
-// router.post('/companies', function (req, res) {
-//     if (!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('punchCount')) {
-//         res.statusCode = 400;
-//         return res.send('Post syntax error');
-//     }
-//     var newCompany = {
-//         id: companies.length + 1,
-//         name: req.body.name,
-//         punchCount: req.body.punchCount
-//     };
+// Registers a new company to the punchcard.com service
+router.post('/companies', jsonParser, (req, res) => {
+    console.log("prump");
+    if(req.headers.authorization !== adminToken){
+        res.status(401).json({error: "auth denied!"});
+    }
+    else{
+        const comp = new entities.Companies({
+            "name": req.body.name,
+            "punchCount": req.body.punchCount
+          });
+        
+        comp.save((err) =>{
+            if(err){
+                if(err.name || err.punchCount){
+                    res.status(412).json("Precondition failed!");
+                }
+                res.status(500).json("internal error!");
+            }
+            const {name, punchCount, _id} = entities.Companies;
+            res.status(201).json({name, punchCount, id: _id});
+        })
+    }
+});
 
-//     companies.push(newCompany);
 
-//     res.json(true);
-// });
 
 // // Gets a specific company, given a valid id
 // router.get('/companies/:id', function (req, res) {
@@ -138,15 +146,6 @@ router.get('/companies', function (req, res) {
 
 // Company functions
 
-function getCompanies () {
-    var retVal = entities.Companies.find({}, (err, docs) => {
-    if (retVal.err) {
-        return retVal.err;
-    }
-  
-    return retVal;
-    })
-}
 
   function isValidCompany(companyId) {
     for (var i = 0; i < companies.length; i++) {

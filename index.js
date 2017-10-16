@@ -14,9 +14,6 @@
 const api = require('./api.js');
 const entities = require('./entities.js');
 
-// import mongoose from require('mongoose');
-// import express from 'express';
-// import bodyParser from 'body-parser';
 
 const mongoose = require('mongoose');
 const express = require("express");
@@ -25,10 +22,20 @@ const bodyParser = require('body-parser');
 var app = express();
 app.use('/api', api);
 
-var url = 'mongodb://localhost:5001/app'
-mongoose.connect(url, {useMongoClient: true});
-mongoose.Promise = global.Promise;
+var url = 'mongodb://veft:123465@ds119355.mlab.com:19355/app'
+mongoose.connect(url, {useMongoClient: true}, (err) => {
+  if(err){
+    console.log("no connection -->" + err);
+    return;
+  }
+  else{
+    mongoose.Promise = global.Promise;
+    console.log("connected");
+ 
+    console.log('Connected -->', url);
+    // Initialize listen for app to listen on a specific port, either provided or hardcoded
+    app.listen(5001, () => console.log('Server is running on port 5001'));
+  }
+});
 
-console.log('Connected -->', url);
-// Initialize listen for app to listen on a specific port, either provided or hardcoded
-app.listen(5001, () => console.log('Server is running on port 5001'));
+
