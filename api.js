@@ -16,6 +16,9 @@ const adminToken = 'admin';
 router.get('/companies', function (req, res) {
     console.log("asdf");
     entities.Companies.find({}).exec((err, data) =>{
+        if(err){
+            res.status(500).json("ERROR FAILED TO FETCH FROM DATABASE!");
+        }
         const filteredData = data.map(comps => ({
             name: comps.name,
             punchCount: comps.punchCount,
@@ -24,6 +27,27 @@ router.get('/companies', function (req, res) {
         res.json({comps: filteredData});
     });
 });
+
+// Gets a specific company, given a valid id
+router.get('/companies/:id', function (req, res) {
+
+    entities.Companies.find({'_id': req.params.id}).exec((err, data) => {
+        if(err){
+            res.status(500).json("internal errr");
+        }
+        if(data == null){
+            res.status(404).json("COMPANY NOTT DOUND");
+        }
+        const filteredSelectedData = data.map(comp => ({
+            name: comp.name,
+            punchCount: comp.punchCount,
+            id: comp._id
+        }));
+        res.json({comp: filteredSelectedData});
+    })
+});
+
+
 
 // Registers a new company to the punchcard.com service
 router.post('/companies', jsonParser, (req, res) => {
@@ -37,37 +61,20 @@ router.post('/companies', jsonParser, (req, res) => {
             "punchCount": req.body.punchCount
           });
         
-        comp.save((err) =>{
+        comp.save((err) => {
             if(err){
                 if(err.name || err.punchCount){
                     res.status(412).json("Precondition failed!");
                 }
                 res.status(500).json("internal error!");
             }
-            const {name, punchCount, _id} = entities.Companies;
-            res.status(201).json({name, punchCount, id: _id});
+            res.status(201).json(comp);
         })
     }
 });
 
 
 
-// // Gets a specific company, given a valid id
-// router.get('/companies/:id', function (req, res) {
-//     var company;
-//     for (var i = 0; i < companies.length; i++) {
-//         if (companies[i].id == req.params.id) {
-//             company = companies[i];
-//             break;
-//         }
-//     }
-//     if (company) {
-//         return res.json(company);
-//     } else {
-//         res.statusCode = 404;
-//         return res.send('Company with given id was not found');
-//     }
-// });
 
 // // Gets all users in the system
 // router.get('/users', function (req, res) {
