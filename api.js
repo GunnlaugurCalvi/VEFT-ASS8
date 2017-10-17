@@ -118,7 +118,7 @@ router.get('/users',  (req, res) => {
 // passed in via the request body
 router.post('/my/punches', jsonParser, (req, res) =>{
     entities.Users.find({'token': req.headers.authorization}).exec((err, data) => {
-        if(err || data === null){
+        if(!req.headers.authorization){
             res.status(401).json({error:"No user found by this token or token value is missing!"});
         }        
 
@@ -126,24 +126,43 @@ router.post('/my/punches', jsonParser, (req, res) =>{
             if(error){
                 res.status(500).json({error:"We are so sorry!"});
             }
-            if(goods === null){
+            if(!req.body.id){
                 res.status(404).json({error:"Nope, nonono company found!"});
             }   
             
-            const punch = new entities.Punches({
+            let punch = new entities.Punches({
                 "company_id": req.body.company_id,
                 "user_id": data[0].toObject()._id,
                 "created": req.body.created,
                 "used": req.body.used 
             });
             
-            console.log("MY DATA 2->>> " + data);
-            
             punch.save((err) => {
                 if(err){
                     res.status(500).json({error:"Something went wrong could not save punch!"});
                 }
-                res.status(201).json(punch);
+                entities.Punches.count({'company_id': req.body.company_id}).exec((err, c) => {
+                    if(err){
+                        res.status(500).json({error:"Something went wrong could count punches!"});
+                    }
+                    console.log("count is " + c)
+
+                    entities.Companies.find({'_id': req.body.company_id}).exec((err, retVal) => {
+                        if(err){
+                            res.status(500).json({error:"Something went wrong could count punches!"});
+                        }
+                        //console.log("bararetVal " + retVal);
+                        console.log("retVal " + retVal[0].toObject().punchCount);
+                        if(c >= retVal[0].toObject().punchCount)
+                        {
+                            let discountPunch = Object.assign(punch,{discount:true})  
+                            console.log("I´m in with my " + discountPunch)
+                            res.json(discountPunch);
+                            
+                        }
+                    });
+                    res.status(201).json(punch);
+                });
             });
         });
     });
