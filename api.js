@@ -12,7 +12,7 @@ const adminToken = 'admin';
 router.get('/companies',  (req, res) => {
     entities.Companies.find({}).exec((err, data) =>{
         if(err){
-            res.status(500).json("ERROR FAILED TO FETCH FROM DATABASE!");
+            res.status(500).json({error:"ERROR FAILED TO FETCH FROM DATABASE!"});
         }
         const filteredData = data.map(comps => ({
             name: comps.name,
@@ -28,10 +28,10 @@ router.get('/companies/:id', (req, res) => {
 
     entities.Companies.find({'_id': req.params.id}).exec((err, data) => {
         if(err){
-            res.status(500).json("internal errr");
+            res.status(500).json({error:"internal errr"});
         }
         if(data == null){
-            res.status(404).json("COMPANY NOTT DOUND");
+            res.status(404).json({error:"COMPANY NOTT DOUND"});
         }
         const filteredSelectedData = data.map(comp => ({
             name: comp.name,
@@ -59,9 +59,9 @@ router.post('/companies', jsonParser, (req, res) => {
         comp.save((err) => {
             if(err){
                 if(err.name || err.punchCount){
-                    res.status(412).json("Precondition failed!");
+                    res.status(412).json({error:"Precondition failed!"});
                 }
-                res.status(500).json("Internal error!");
+                res.status(500).json({error:"Internal error!"});
             }
             res.status(201).json(comp);
         })
@@ -75,13 +75,10 @@ router.post('/users', jsonParser, (req, res) => {
         res.status(401).json({error: "Auth denied!"});
     }
     if(!req.body.name || !req.body.gender){
-        res.status(412).json("Precondition failed!");
+        res.status(412).json({error:"Precondition failed!"});
     }
-    else if(req.body.gender === 'm'  || req.body.gender === "f" || req.body.gender === "o"){
-        console.log("nice");
-    }
-    else {
-        res.status(412).json("Invalid gender!");
+    else if(!(req.body.gender.toString() === 'm'  || req.body.gender.toString() === "f" || req.body.gender.toString() === "o")){
+        res.status(412).json({error:"Invalid gender!"});
     }
 
     const user = new entities.Users({
@@ -92,7 +89,7 @@ router.post('/users', jsonParser, (req, res) => {
 
     user.save((err) => {
         if(err){
-            res.status(500).json("Internal error!");
+            res.status(500).json({error:"Internal error!"});
         }
         res.status(201).json(user);            
     });
