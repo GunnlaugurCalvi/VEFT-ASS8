@@ -33,10 +33,7 @@ router.get('/companies/:id', (req, res) => {
 
     entities.Companies.find({'_id': req.params.id}).exec((err, data) => {
         if(err){
-            res.status(500).json({error:"internal errr"});
-        }
-        if(data == null){
-            res.status(404).json({error:"COMPANY NOTT DOUND"});
+            res.status(404).json({error:"Company not found!"});
         }
         const filteredSelectedData = data.map(comp => ({
             name: comp.name,
