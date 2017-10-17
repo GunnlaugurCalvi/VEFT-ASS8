@@ -9,7 +9,9 @@ const router = express.Router();
 const jsonParser = bodyParser.json();
 const adminToken = 'admin';
 
-
+/*
+Fetches a list of companies that have been added to MongoDB. 
+*/
 router.get('/companies',  (req, res) => {
     entities.Companies.find({}).exec((err, data) =>{
         if(err){
@@ -23,8 +25,10 @@ router.get('/companies',  (req, res) => {
         res.json({comps: filteredData});
     });
 });
-
-// Gets a specific company, given a valid id
+ 
+/*
+Fetches a given company that has been added to MongoDB by id.
+*/
 router.get('/companies/:id', (req, res) => {
 
     entities.Companies.find({'_id': req.params.id}).exec((err, data) => {
@@ -45,7 +49,9 @@ router.get('/companies/:id', (req, res) => {
 
 
 
-// Registers a new company to the punchcard.com service
+/*
+Allows administrators to add new companies to MongoDB. 
+*/
 router.post('/companies', jsonParser, (req, res) => {
     console.log("prump");
     if(req.headers.authorization !== adminToken){
@@ -70,7 +76,9 @@ router.post('/companies', jsonParser, (req, res) => {
 });
 
 
-// Creates a new user in the Database
+/*
+Allows administrators to add a new user.
+*/
 router.post('/users', jsonParser, (req, res) => {
 
     
@@ -98,7 +106,9 @@ router.post('/users', jsonParser, (req, res) => {
     });
 });
 
-// Gets all users in the system
+/*
+Returns a list of all users that are in the MongoDB.
+*/
 router.get('/users',  (req, res) => {
     entities.Users.find({}).exec((err, data) =>{
         if(err){
@@ -114,8 +124,10 @@ router.get('/users',  (req, res) => {
     });
 });
 
-// Creates a new punch for the "current user" for a given company, the company id should be
-// passed in via the request body
+/*
+Creates a new punch for the "current user" for a given company, the company id should be
+passed in via the request body
+*/
 router.post('/my/punches', jsonParser, (req, res) =>{
     entities.Users.find({'token': req.headers.authorization}).exec((err, data) => {
         if(!req.headers.authorization){
