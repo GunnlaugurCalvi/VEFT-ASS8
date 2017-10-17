@@ -1,8 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const entities = require('./entities');
-// const Companies = require('./entities');
-// const Punches = require('./entities');
+
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 
@@ -13,8 +12,7 @@ const jsonParser = bodyParser.json();
 const adminToken = 'admin';
 // Defining data structures for companies and users in punchcard.com
 
-router.get('/companies', function (req, res) {
-    console.log("asdf");
+router.get('/companies',  (req, res) => {
     entities.Companies.find({}).exec((err, data) =>{
         if(err){
             res.status(500).json("ERROR FAILED TO FETCH FROM DATABASE!");
@@ -29,7 +27,7 @@ router.get('/companies', function (req, res) {
 });
 
 // Gets a specific company, given a valid id
-router.get('/companies/:id', function (req, res) {
+router.get('/companies/:id', (req, res) => {
 
     entities.Companies.find({'_id': req.params.id}).exec((err, data) => {
         if(err){
@@ -53,7 +51,7 @@ router.get('/companies/:id', function (req, res) {
 router.post('/companies', jsonParser, (req, res) => {
     console.log("prump");
     if(req.headers.authorization !== adminToken){
-        res.status(401).json({error: "auth denied!"});
+        res.status(401).json({error: "Auth denied!"});
     }
     else{
         const comp = new entities.Companies({
@@ -66,7 +64,7 @@ router.post('/companies', jsonParser, (req, res) => {
                 if(err.name || err.punchCount){
                     res.status(412).json("Precondition failed!");
                 }
-                res.status(500).json("internal error!");
+                res.status(500).json("Internal error!");
             }
             res.status(201).json(comp);
         })
@@ -74,115 +72,81 @@ router.post('/companies', jsonParser, (req, res) => {
 });
 
 
-
-
-// // Gets all users in the system
-// router.get('/users', function (req, res) {
-//     return res.json(users);
-// });
-
-// // Creates a new user in the system
-// router.post('/users', function (req, res) {
-//     if (!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('email')) {
-//         res.statusCode = 400;
-//         return res.send('User was not properly formatted');
-//     }
-//     var newUser = {
-//         id: users.length + 1,
-//         name: req.body.name,
-//         email: req.body.email 
-//     }
-//     users.push(newUser);
-
-//     res.json(true);
-// });
-
-// // Returns a list of all punches, registered for the given user
-// router.get('/users/:id/punches', function (req, res) {
-//     if (!isValidUser(req.params.id)) {
-//         res.statusCode = 404;
-//         return res.send('User with given id was not found in the system.');
-//     }
-//     // There was a ?company query provided
-//     if (req.query.company) {
-//         var filteredPunches = punches.get(req.params.id);
-//         if (filteredPunches) {
-//             // The user already has some punches in his list
-//             var returnList = [];
-//             filteredPunches.forEach(function (value, idx) {
-//                 if (value.companyId == req.query.company) {
-//                     returnList.push(value);
-//                 }
-//             });
-//             return res.json(returnList);
-//         } else {
-//             return res.json([]);
-//         }
-//     } else {
-//         var retrievedPunches = punches.get(req.params.id) === undefined ? [] : punches.get(req.params.id);
-//         return res.json(retrievedPunches);
-//     }
-// });
-
-// // Creates a punch, associated with a user
-// router.post('/users/:id/punches', function (req, res) {
-//     if (!req.body.hasOwnProperty('companyId')) {
-//         res.statusCode = 400;
-//         return res.send('Company Id is missing');
-//     } else if (!isValidUser(req.params.id)) {
-//         res.statusCode = 404;
-//         return res.send('The user was not found in the system.');
-//     } else if (!isValidCompany(req.body.companyId)) {
-//         res.statusCode = 404;
-//         return res.send('The company with the given id was not found in the system.');
-//     }
-
-//     // We have valid data
-//     var oldPunches = punches.get(req.params.id) === undefined ? [] : punches.get(req.params.id);
-//     oldPunches.push({
-//         companyId: req.body.companyId,
-//         companyName: getCompanyNameById(req.body.companyId),
-//         created: new Date().toLocaleString()
-//     });
-//     punches.set(req.params.id, oldPunches);
-
-//     res.json(true);
-//
-
-// // Helper functions
-
-// Company functions
-
-
-  function isValidCompany(companyId) {
-    for (var i = 0; i < companies.length; i++) {
-        if (companies[i].id == companyId) {
-            return true;
-        }
+// Creates a new user in the Database
+router.post('/users', jsonParser, (req, res) => {
+    if(req.headers.authorization !== adminToken){
+        res.status(401).json({error: "Auth denied!"});
     }
-    return false;
-}
-
-// User functions
-
-function isValidUser(userId) {
-    for (var i = 0; i < users.length; i++) {
-        if (users[i].id == userId) {
-            return true;
-        }
+    if(!req.body.name || !req.body.gender){
+        res.status(412).json("Precondition failed!");
     }
-    return false;
-}
+    else if(req.body.gender === "m"  || req.body.gender === "f" || req.body.gender === "o"){
+        console.log("nice");
+    }
+    else {
+        res.status(412).json("Invalid gender!");
+    }
 
+    const user = new entities.Users({
+        "name": req.body.name,
+        "gender": req.body.gender,
+        "token": uuid.v1()
+    });
 
+    user.save((err) => {
+        if(err){
+            res.status(500).json("Internal error!");
+        }
+        res.status(201).json(user);            
+    });
+});
 
-// function getCompanyNameById(companyId) {
-//     for (var i = 0; i < companies.length; i++) {
-//         if (companies[i].id == companyId) {
-//             return companies[i].name;
-//         }
-//     }
-//     return "";
-// }
+// Gets all users in the system
+router.get('/users',  (req, res) => {
+    entities.Users.find({}).exec((err, data) =>{
+        if(err){
+            res.status(500).json("Some issues from the inside, lol thats what she said");
+        }
+        const filterTokenOut = data.map(users => ({
+            name: users.name,
+            gender: users.gender,
+            id: users._id
+        }));
+
+        res.status(200).json({users: filterTokenOut});
+    });
+});
+
+// Creates a new punch for the "current user" for a given company, the company id should be
+// passed in via the request body
+router.post('/my/punches', jsonParser, (req, res) =>{
+    entities.Users.find({'token': req.headers.authorization}).exec((err, data) => {
+        if(err || data === null){
+            res.status(401).json({error:"No user found by this token or token value is missing!"});
+        }        
+
+        entities.Companies.find({'_id': req.body.id}).exec((error, goods) => {
+            if(error){
+                res.status(500).json({error:"We are so sorry!"});
+            }
+            if(goods === null){
+                res.status(404).json({error:"Nope, nonono company found!"});
+            }
+
+            const punch = new entities.Punches({
+                "company_id": req.body.company_id,
+                "user_id": data._id,
+                "created": req.body.created,
+                "used": req.body.used 
+            });
+            punch.save((err) => {
+                if(err){
+                    res.status(500).json({error:"Something went wrong could not save punch!"});
+                }
+                res.status(201).json(punch);
+            });
+        });
+    });
+});
 
 module.exports = router;

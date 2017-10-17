@@ -4,20 +4,21 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const users = new Schema({
-    name: { type: String, required: true },         // Name of user
-    token: { type: String, required: true },        // Autorization token
-    gender: { type: Date, default: "o" }            // m,f or o
+    name: { type: String, required: true },            // Name of user
+    gender: { type: String, default: "o" },            // m,f or o
+    token: { type: String, required: true }            // Autorization token
 });
 
 const companies = new Schema({
-    name: { type: String, required: true },         // Name of user
-    punchCount: { type: Number, default: 10 },       // Number of punches before discound
+    name: { type: String, required: true },             // Name of user
+    punchCount: { type: Number, default: 10 },          // Number of punches before discound
 });
 
 const punches = new Schema({
-    company_id: Number,                             // Id of company           
-    created: { type: Date, default: Date.now },     // Time stand when punch is created
-    used: { type: Boolean, required: false }        // Indicated if the user has used his discound, true or false
+    company_id: String,                                 // Id of company  
+    user_id: String,                                    // Id of user
+    created: { type: Date, default: Date.now },         // Time stand when punch is created
+    used: { type: Boolean, default: false }            // Indicated if the user has used his discound, true or false
 });
 
 
