@@ -4,6 +4,7 @@ const entities = require('./entities');
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 
+
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const adminToken = 'admin';
@@ -80,7 +81,6 @@ router.post('/users', jsonParser, (req, res) => {
     else if(!(req.body.gender.toString() === 'm'  || req.body.gender.toString() === "f" || req.body.gender.toString() === "o")){
         res.status(412).json({error:"Invalid gender!"});
     }
-
     const user = new entities.Users({
         "name": req.body.name,
         "gender": req.body.gender,
