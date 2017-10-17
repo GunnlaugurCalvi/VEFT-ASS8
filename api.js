@@ -72,9 +72,12 @@ router.post('/companies', jsonParser, (req, res) => {
 
 // Creates a new user in the Database
 router.post('/users', jsonParser, (req, res) => {
+
+    
     if(req.headers.authorization !== adminToken){
         res.status(401).json({error: "Auth denied!"});
-    }
+    }   
+  
     if(!req.body.name || !req.body.gender){
         res.status(412).json({error:"Precondition failed!"});
     }
@@ -127,7 +130,6 @@ router.post('/my/punches', jsonParser, (req, res) =>{
                 res.status(404).json({error:"Nope, nonono company found!"});
             }   
             
-            console.log()  // 
             const punch = new entities.Punches({
                 "company_id": req.body.company_id,
                 "user_id": data[0].toObject()._id,
