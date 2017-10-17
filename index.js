@@ -14,7 +14,6 @@
 const api = require('./api.js');
 const entities = require('./entities.js');
 
-
 const mongoose = require('mongoose');
 const express = require("express");
 const bodyParser = require('body-parser');
@@ -22,7 +21,10 @@ const bodyParser = require('body-parser');
 var app = express();
 app.use('/api', api);
 
+// Define database connection
 var url = 'mongodb://veft:123465@ds119355.mlab.com:19355/app'
+
+// Connect to database
 mongoose.connect(url, {useMongoClient: true}, (err) => {
   if(err){
     console.log("no connection -->" + err);
@@ -30,9 +32,9 @@ mongoose.connect(url, {useMongoClient: true}, (err) => {
   }
   else{
     mongoose.Promise = global.Promise;
-    console.log("connected");
  
     console.log('Connected -->', url);
+    
     // Initialize listen for app to listen on a specific port, either provided or hardcoded
     app.listen(5001, () => console.log('Server is running on port 5001'));
   }

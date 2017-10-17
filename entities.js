@@ -1,19 +1,22 @@
 const mongoose = require('mongoose');
 
-//Define a schema
+//Define schema
 var Schema = mongoose.Schema;
 
+// User schema
 const users = new Schema({
     name: { type: String, required: true },            // Name of user
     gender: { type: String, default: "o" },            // m,f or o
     token: { type: String, required: true }            // Autorization token
 });
 
+// Company schema
 const companies = new Schema({
     name: { type: String, required: true },             // Name of user
     punchCount: { type: Number, default: 10 },          // Number of punches before discound
 });
 
+// Punches schema
 const punches = new Schema({
     company_id: String,                                 // Id of company  
     user_id: String,                                    // Id of user
