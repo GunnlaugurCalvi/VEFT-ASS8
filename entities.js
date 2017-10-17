@@ -14,11 +14,12 @@ const companies = new Schema({
     punchCount: { type: Number, default: 10 },          // Number of punches before discound
 });
 
-let punches = new Schema({
+const punches = new Schema({
     company_id: String,                                 // Id of company  
     user_id: String,                                    // Id of user
     created: { type: Date, default: Date.now },         // Time stand when punch is created
-    used: { type: Boolean, default: false }             // Indicated if the user has used his discound, true or false
+    used: { type: Boolean, default: false },            // Indicated if the user has used his discound, true or false
+    discount: {type: Boolean, default: false}           // Indicated if discount or not           
 });
 
 

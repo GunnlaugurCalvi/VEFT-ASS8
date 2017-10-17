@@ -126,7 +126,7 @@ router.post('/my/punches', jsonParser, (req, res) =>{
             if(error){
                 res.status(500).json({error:"We are so sorry!"});
             }
-            if(!req.body.id){
+            if(!req.body.company_id){
                 res.status(404).json({error:"Nope, nonono company found!"});
             }   
             
@@ -149,19 +149,44 @@ router.post('/my/punches', jsonParser, (req, res) =>{
 
                     entities.Companies.find({'_id': req.body.company_id}).exec((err, retVal) => {
                         if(err){
-                            res.status(500).json({error:"Something went wrong could count punches!"});
+                            res.status(500).json({error:"Something went wrong while searching for companies!"});
                         }
                         //console.log("bararetVal " + retVal);
                         console.log("retVal " + retVal[0].toObject().punchCount);
                         if(c >= retVal[0].toObject().punchCount)
                         {
-                            let discountPunch = Object.assign(punch,{discount:true})  
-                            console.log("I´m in with my " + discountPunch)
-                            res.json(discountPunch);
                             
+                            
+                            entities.Punches.find({'company_id': req.body.company_id}).exec((err, fPunch) => {
+                                if(err){
+                                    res.status(500).json({error:"Something went wrong could count punches!"});
+                                }
+
+                                const filterPunch = fPunch.map(discount =>({
+                                    "company_id": discount.company_id,
+                                    "user_id": data[0].toObject()._id,
+                                    "created": discount.created,
+                                    "used": discount.used,
+                                    "discount": true
+                                }))
+
+                                res.status(201).json({punches:filterPunch});
+                            });
+                        }else{
+                            entities.Punches.find({'company_id': req.body.company_id}).exec((err, fPunch) => {
+                                if(err){
+                                    res.status(500).json({error:"Something went wrong could count punches!"});
+                                }
+                                const filterPunch = fPunch.map(discount =>({
+                                    "company_id": discount.company_id,
+                                    "user_id": data[0].toObject()._id,
+                                    "created": discount.created,
+                                    "used": discount.used 
+                                }))
+                            res.status(201).json({punches:filterPunch});
+                            });
                         }
                     });
-                    res.status(201).json(punch);
                 });
             });
         });
