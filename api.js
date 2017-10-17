@@ -1,16 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const entities = require('./entities');
-
 const uuid = require('uuid');
 const mongoose = require('mongoose');
 
-
- // Application setup
 const router = express.Router();
 const jsonParser = bodyParser.json();
 const adminToken = 'admin';
-// Defining data structures for companies and users in punchcard.com
+
 
 router.get('/companies',  (req, res) => {
     entities.Companies.find({}).exec((err, data) =>{
@@ -80,7 +77,7 @@ router.post('/users', jsonParser, (req, res) => {
     if(!req.body.name || !req.body.gender){
         res.status(412).json("Precondition failed!");
     }
-    else if(req.body.gender === "m"  || req.body.gender === "f" || req.body.gender === "o"){
+    else if(req.body.gender === 'm'  || req.body.gender === "f" || req.body.gender === "o"){
         console.log("nice");
     }
     else {
@@ -131,14 +128,18 @@ router.post('/my/punches', jsonParser, (req, res) =>{
             }
             if(goods === null){
                 res.status(404).json({error:"Nope, nonono company found!"});
-            }
-
+            }   
+            
+            console.log()  // 
             const punch = new entities.Punches({
                 "company_id": req.body.company_id,
-                "user_id": data._id,
+                "user_id": data[0].toObject()._id,
                 "created": req.body.created,
                 "used": req.body.used 
             });
+            
+            console.log("MY DATA 2->>> " + data);
+            
             punch.save((err) => {
                 if(err){
                     res.status(500).json({error:"Something went wrong could not save punch!"});
